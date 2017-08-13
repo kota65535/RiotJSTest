@@ -11,6 +11,11 @@ export class GoogleDriveAPI {
         });
     }
 
+
+    setAccessToken(accessToken) {
+        this.accessToken = accessToken;
+    }
+
     /**
      * フォルダーの表示・選択が可能なPickerを表示する。
      * @param parents
@@ -18,7 +23,7 @@ export class GoogleDriveAPI {
      */
     showFolderPicker(parents, callback) {
         let foldersOnlyView = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
-            .setParent('root')      // これを付けないと全ての階層のフォルダが列挙される
+            .setParent(parents)      // これを付けないと全ての階層のフォルダが列挙される
             .setIncludeFolders(true)
             .setSelectFolderEnabled(true);
 
@@ -31,9 +36,6 @@ export class GoogleDriveAPI {
             .setDeveloperKey(this.apiKey)
             .setCallback(callback);
 
-        if (parents) {
-            pickerBuilder.setParents(parents);
-        }
 
         let pickerInstance = pickerBuilder.build();
 
@@ -55,6 +57,10 @@ export class GoogleDriveAPI {
             .setIncludeFolders(true)
             .setSelectFolderEnabled(true);
 
+        if (parents) {
+            docsView.setParent(parents);
+        }
+
         let pickerBuilder = new google.picker.PickerBuilder()
             .enableFeature(google.picker.Feature.MINE_ONLY)
             .enableFeature(google.picker.Feature.NAV_HIDDEN)
@@ -65,9 +71,6 @@ export class GoogleDriveAPI {
             .setDeveloperKey(this.apiKey)
             .setCallback(callback);
 
-        if (parents) {
-            pickerBuilder.setParents(parents);
-        }
 
         let pickerInstance = pickerBuilder.build();
 

@@ -19,42 +19,108 @@ export class GoogleAPIManager {
             CLIENT_ID,
             SCOPE,
             DISCOVER_DOCS,
-            this.onLoadedWrapper.bind(this),
-            this.onSignInStatusChangedWrapper.bind(this)
+            this._onLoadedWrapper.bind(this),
+            this._onSignInStatusChangedWrapper.bind(this)
         );
 
         this.onLoaded = onLoaded;
         this.onSignInStatusChanged = onSignInStatusChanged;
 
+        this.accessToken = null;
         this.driveAPI = new GoogleDriveAPI(
             API_KEY,
             null
-        )
+        );
+        this.oneoffOnSignedIn = null;
     }
 
-    signIn() {
+    /**
+     * サインインする。
+     * @param {function} onSignedIn サインイン成功時に呼ばれるコールバック
+     */
+    signIn(onSignedIn) {
+        this.oneoffOnSignedIn = onSignedIn;
         this.authAPI.signIn();
     }
 
-    onLoadedWrapper(isSignedIn) {
-        this._setAccessTokenIfAuthorized();
+    signOut() {
+        this.authAPI.signOut();
+    }
+
+    isSignedIn() {
+        return this.authAPI.isSignedIn();
+    }
+
+    showFilePicker(callback) {
+        if (this.isSignedIn()) {
+            this.driveAPI.showFilePicker("root", callback);
+        } else {
+            this.signIn(() => {
+                this.driveAPI.showFilePicker("root", callback);
+            })
+        }
+    }
+
+    showFolderPicker(callback) {
+        if (this.isSignedIn()) {
+            this.driveAPI.showFolderPicker("root", callback);
+        } else {
+            this.signIn(() => {
+                this.driveAPI.showFolderPicker("root", callback);
+            })
+        }
+    }
+
+    getFilePath(fileId) {
+        return this.driveAPI.getFilePath(fileId);
+    }
+
+
+    createFile(fileName, parents) {
+        return this.driveAPI.createFile(fileName, "application/json", parents);
+    }
+
+    updateFile(fileId, content) {
+        return this.driveAPI.updateFile(fileId, content);
+    }
+
+    downloadFile(fileId) {
+        return this.driveAPI.downloadFile(fileId);
+    }
+
+        // withSignedIn(func, args) {
+    //     if (this.isSignedIn()) {
+    //         func.apply(args);
+    //     } else {
+    //         this.signIn(() => {
+    //             func.apply(args);
+    //         })
+    //     }
+    // }
+
+    _onLoadedWrapper(isSignedIn) {
+        this._authorize();
         this.onLoaded(isSignedIn);
-        this.onSignInStatusChanged(isSignedIn);
     }
 
-    onSignInStatusChangedWrapper(isSignedIn) {
+    _onSignInStatusChangedWrapper(isSignedIn) {
+        this._authorize();
         this.onSignInStatusChanged(isSignedIn);
-
+        // サインイン時にコールバックが与えられていたら実行する
+        if (this.oneoffOnSignedIn) {
+            this.oneoffOnSignedIn();
+            this.oneoffOnSignedIn = null;
+        }
     }
 
-    _setAccessTokenIfAuthorized() {
+    // 認証を行い、アクセストークンを取得する
+    _authorize() {
         let user = this.authAPI.getCurrentUser();
         let isAuthorized = user.hasGrantedScopes(SCOPE);
         if (isAuthorized) {
             console.log(user);
-            this.driveAPI.accessToken = user.getAuthResponse().access_token;
+            this.driveAPI.setAccessToken(user.getAuthResponse().access_token);
         }
-
     }
 
 }

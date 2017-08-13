@@ -40,6 +40,7 @@
     "paper": "^0.11.4",
     "riot": "^3.6.1",
     "riot-route": "^3.1.2",
+    "riot-router": "^0.9.7",
     "riotcontrol": "0.0.3",
     "sprintf-js": "^1.1.1"
   }

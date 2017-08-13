@@ -1,11 +1,20 @@
 <app>
 
   <app-nav></app-nav>
-  <div id="app-view"></div>
+  <!--<router>-->
+    <!--<route path="editor">-->
+      <!--<view-editor is-authorized={ true }/>-->
+    <!--</route>-->
+    <!--<route path="config">-->
+      <!--<view-config/>-->
+    <!--</route>-->
+  <!--</router>-->
+  <div ref="view"></div>
+
 
   <script type="es6">
       import riot from "riot";
-      import route from "riot-route";
+      import route from "riot-route/lib/tag";
       import {GoogleAPIManager} from "../lib/google/GoogleAPIManager";
       import "../vendor";
       import logger from "../logging";
@@ -14,15 +23,13 @@
       //==========================
       // Routing & Switching views
       //==========================
-
-      this._currentView = null;
       this.isAuthorized = false;
 
       this.loadView = (viewName, isAuthorized) => {
-          if (this._currentView) {
-              this._currentView.unmount(true)
+          if (this.refs.view._tag) {
+              this.refs.view._tag.unmount(true) //true to keep the element
           }
-          this._currentView = riot.mount('div#app-view', viewName, {isAuthorized: isAuthorized})[0];
+          riot.mount(this.refs.view, viewName, {isAuthorized: isAuthorized})[0];
       };
 
       route((view) => {
@@ -52,14 +59,21 @@
           window.googleAPIManager = new GoogleAPIManager( (isAuthorized) => {
               log.info(`Google auth API loaded: isAuthorized=${isAuthorized}`)
               this.isAuthorized = isAuthorized;
-              this.update();
+              route.exec();
           }, (isAuthorized) => {
               log.info(`Auth status changed: isAuthorized=${isAuthorized}`)
               this.isAuthorized = isAuthorized;
-              riot.update();
-//              this.update();
-//              this.loadView();
+              route.exec();
           });
       };
+
+
+      //====================
+      // Notification
+      //====================
+
+      $.notifyDefaults({
+          z_index: 10000
+      });
   </script>
 </app>
