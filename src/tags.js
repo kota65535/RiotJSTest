@@ -1,0 +1,8 @@
+import "./tag/app.tag"
+import "./tag/app-nav.tag"
+import "./tag/view-editor.tag"
+import "./tag/editor-nav.tag"
+import "./tag/editor-main.tag"
+import "./tag/view-config.tag"
+import "./css/app.scss"
+// import "./tag/config-main.tag"
