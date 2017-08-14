@@ -125,5 +125,3 @@ fabric.properties
 .idea/
 
 # End of https://www.gitignore.io/api/node,webstorm+all
-
-dist/bundle.js*
