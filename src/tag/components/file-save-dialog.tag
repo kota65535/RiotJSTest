@@ -1,7 +1,6 @@
 <file-save-dialog>
 
-  <!-- Save File Dialog -->
-  <div id="{ opts.dialogId }" class="modal fade">
+  <div id="{ opts.ref }" class="modal fade">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -11,22 +10,22 @@
         <div class="modal-body">
           <div class="container-fluid">
             <div class="form-group row">
-              <label class="col-sm-2 control-label" for="{ opts.dialogId + '-file-name' }">Save As:</label>
+              <label class="col-sm-2 control-label" for="{ opts.ref + '-file-name' }">Save As:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="{ opts.dialogId + '-file-name' }">
+                <input type="text" class="form-control" id="{ opts.ref + '-file-name' }">
               </div>
-              <label class="col-sm-2 control-label" for="{ opts.dialogId + '-select-folder' }">Where:</label>
+              <label class="col-sm-2 control-label" for="{ opts.ref + '-select-folder' }">Where:</label>
               <div class="col-sm-8">
-                <input type="text" id="{ opts.dialogId + '-select-folder' }" class="form-control" readonly="readonly"
+                <input type="text" id="{ opts.ref + '-select-folder' }" class="form-control" readonly="readonly" required="true"
                        onclick="{ onSelectFolder }" value="{ initialFolderPath }"/>
-                <input type="hidden" id="{ opts.dialogId + '-folder-id' }">
+                <input type="hidden" id="{ opts.ref + '-folder-id' }">
               </div>
               <button id="reset-folder" type="button" class="btn btn-primary" onclick="{ onResetFolder }"><i class="fa fa-home" aria-hidden="true"></i></button>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" id="{ opts.dialogId + '-ok' }" class="btn btn-primary" onclick="{ opts.onOk }">OK</button>
+          <button type="button" id="{ opts.ref + '-ok' }" class="btn btn-primary" onclick="{ onOK }">OK</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
@@ -35,28 +34,63 @@
 
   <script type="es6">
 
-    this.initialFolderPath = "My Drive";
+      this.initialFolderPath = "My Drive";
+
+
+      //====================
+      // Public methods
+      //====================
+
+      this.show = () => {
+          // 本当はrefsを用いて参照したいが、bootstrapのmodalメソッドはjqueryでのセレクタにしか対応していない
+          $$(`#${opts.ref}`).modal('show');
+      }
+
+      this.hide = () => {
+          $$(`#${opts.ref}`).modal('hide');
+      }
+
+      //====================
+      // Private methods
+      //====================
 
       this.onSelectFolder = () => {
           window.googleAPIManager.showFolderPicker((pickerEvent) => {
               if (pickerEvent.action === "picked") {
                   let folderId = pickerEvent.docs[0].id;
-                  $$(`#${opts.dialogId}-folder-id`).val(folderId);
+                  $$(`#${opts.ref}-folder-id`).val(folderId);
                   // 擬似的なファイルパスを取得する
                   window.googleAPIManager.getFilePath(folderId)
                       .then(path => {
                           console.log(`File path: ${path}`);
-                          $$(`#${opts.dialogId}-select-folder`).val(path);
+                          $$(`#${opts.ref}-select-folder`).val(path);
                       });
               }
           });
       };
 
       this.onResetFolder = () => {
-          $$(`#${opts.dialogId}-select-folder`).val('My Drive');
-          $$(`#${opts.dialogId}-folder-id`).val('root');
+          $$(`#${opts.ref}-select-folder`).val('My Drive');
+          $$(`#${opts.ref}-folder-id`).val('root');
       };
 
+      this.onOK = () => {
+          let fileName = $$(`#${opts.ref}-file-name`).val();
+          let parentId = $$(`#${opts.ref}-folder-id`).val();
+          let parentName = $$(`#${opts.ref}-select-folder`).val();
+
+          if (!fileName) {
+              // TODO: フォームのバリデーション方法を考える
+              $.notify(
+                  { message: "File name is empty." },
+                  { type: "danger", delay: 2000, placement: { align: "center" }});
+              return true;
+          }
+
+          // コールバック呼び出し
+          opts.onOk(fileName, parentId, parentName);
+
+      };
   </script>
 
 </file-save-dialog>

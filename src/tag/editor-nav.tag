@@ -19,7 +19,7 @@
               <li><a onclick="{ onFileNew }">New</a></li>
               <li><a onclick="{ onFileOpen }">Open</a></li>
               <li><a onclick="{ onFileSaveAs }">Save As...</a></li>
-              <li if="{ _editingFileId }">
+              <li if="{ _editingFile }">
                 <a onclick="{ onFileSave }">Save</a>
               </li>
               <!--<li role="separator" class="divider"></li>-->
@@ -44,8 +44,8 @@
     </div><!--/.container-fluid -->
   </nav>
 
-  <file-save-dialog dialog-id="file-new-dialog" title="New File" on-ok="{ onFileNewOK }"/>
-  <file-save-dialog dialog-id="file-save-as-dialog" title="Save File As" on-ok="{ onFileSaveAsOK }"/>
+  <file-save-dialog ref="file-new-dialog" title="New File" on-ok="{ onFileNewOK }"/>
+  <file-save-dialog ref="file-save-as-dialog" title="Save File As" on-ok="{ onFileSaveAsOK }"/>
 
 
   <script type="es6">
@@ -56,54 +56,34 @@
 
       this.mixin("controlMixin");
 
-      this._editingFileId = null;
+      this._editingFile = null;
 
       this.on('mount', () => {
           log.info(`is mounted.`);
           log.printOpts(opts);
       });
 
-      this.setEditingFileId = (fileId) => {
-          this._editingFileId = fileId;
-          this.update();
-      };
 
       //====================
       // File -> New
       //====================
 
       this.onFileNew = () => {
-          log.info("new clicked");
-          $$('#file-new-dialog').modal('show');
+          this.refs["file-new-dialog"].show();
       };
 
-      this.onFileNewOK = () => {
-          let fileName = $$('#file-new-dialog-file-name').val();
-          let parentId = $$('#file-new-dialog-folder-id').val();
-
-          if (!fileName) {
-              $.notify({
-                  message: "File name is empty.",
-//                  element: "save-file-as",
-                  type: "danger",
-                  delay: 2000,
-                  placement: { align: "center" }
-              });
-              return;
-          }
-
+      this.onFileNewOK = (fileName, parentId, parentName) => {
           // ファイルを所定のフォルダに作成する
           window.googleAPIManager.createFile(fileName, 'application/json', [parentId])
               .then(resp => {
-                  $.notify({
-                      message: `File "${resp.result.name}" created.`,
-                      type: 'info'
-                  });
-                  this.setEditingFileId(resp.result.id);
+                  $.notify(
+                      { message: `File "${resp.result.name}" created.` },
+                      { type: 'info' });
+                  this.setEditingFile(resp.result.id, resp.result.name, parentId, parentName);
               });
 
           // ダイアログを閉じる
-          $$('#file-new-dialog').modal('hide');
+          this.refs["file-new-dialog"].hide();
       };
 
       //====================
@@ -111,23 +91,23 @@
       //====================
 
       this.onFileOpen = () => {
-          log.info("open clicked");
           window.googleAPIManager.showFilePicker((pickerEvent) => {
               if (pickerEvent.action === "picked") {
                   let file = pickerEvent.docs[0];
                   window.googleAPIManager.downloadFile(file.id)
                       .then(resp => {
-                          $$('#file-content').val(resp.body);
-                          $.notify({
-                              message: `File "${file.name}" loaded.`,
-                              type: 'info'
-                          });
-                          this.setEditingFileId(file.id);
+                          this.setContent(resp.body);
+                          $.notify(
+                              { message: `File "${file.name}" loaded.` },
+                              { type: 'info' });
                       }, resp => {
-                          $.notify({
-                              message: `Failed to save file. fileId: ${resp.result.id}`,
-                              type: 'danger'
-                          });
+                          $.notify(
+                              { message: `Failed to open file. fileId: ${resp.result.id}` },
+                              { type: 'danger' });
+                      });
+                  window.googleAPIManager.getFilePath(file.parentId)
+                      .then(path => {
+                          this.setEditingFile(file.id, file.name, file.parentId, path);
                       });
               }
           })
@@ -138,72 +118,53 @@
       //====================
 
       this.onFileSaveAs = () => {
-          log.info("save as clicked");
-          $$('#file-save-as-dialog').modal('show');
+          this.refs["file-save-as-dialog"].show();
       };
 
-      this.onFileSaveAsOK = () => {
-          let fileName = $$('#file-save-as-dialog-file-name').val();
-          let parentId = $$('#file-save-as-dialog-folder-id').val();
-          let content = $$('#file-content').val();
-
-          if (!fileName) {
-              $.notify({
-                  message: "File name is empty.",
-                  // element: "save-file-as",
-                  type: "danger",
-                  delay: 2000,
-                  placement: {
-                      align: "center"
-                  }
-              });
-              return
-          }
+      this.onFileSaveAsOK = (fileName, parentId, parentName) => {
+          let content = this.getContent();
 
           // ファイルを所定のフォルダに作成し、さらに中身を書き込む
           window.googleAPIManager.createFile(fileName, 'application/json', [parentId])
               .then(resp => {
                   window.googleAPIManager.updateFile(resp.result.id, content)
                       .then(resp => {
-                          $.notify({
-                              message: `File "${resp.result.name}" saved, content: ${content}`,
-                              type: 'info'
-                          });
-                          this.setEditingFileId(resp.result.id);
+                          $.notify(
+                              { message: `File "${resp.result.name}" saved, content: ${content}` },
+                              { type: 'info' });
+                          this.setEditingFile(resp.result.id, resp.result.name, parentId, parentName);
                       }, resp => {
-                          $.notify({
-                              message: `Failed to save file. fileId: ${resp.result.id}`,
-                              type: 'danger'
-                          });
+                          $.notify(
+                              { message: `Failed to save file. fileId: ${resp.result.id}` },
+                              { type: 'danger' });
                       })
               });
 
-          // ダイアログを閉じる
-          $$('#file-save-as-dialog').modal('hide');
+          this.refs["file-save-as-dialog"].hide();
       };
-
 
       //====================
       // File -> Save
       //====================
 
       this.onFileSave = () => {
-          let content = $$('#file-content').val();
+          let content = this.getContent();
 
-          window.googleAPIManager.updateFile(this._editingFileId, content)
+          window.googleAPIManager.updateFile(this._editingFile.id, content)
               .then(resp => {
-                  $.notify({
-                      message: `File "${resp.result.name}" saved, content: ${content}`,
-                      type: 'info'
-                  });
+                  $.notify(
+                      { message: `File "${resp.result.name}" saved, content: ${content}` },
+                      { type: 'info' });
               }, resp => {
-                  $.notify({
-                      message: `Failed to save file. fileId: ${resp.result.id}`,
-                      type: 'danger'
-                  });
+                  $.notify(
+                      { message: `Failed to save file. fileId: ${resp.result.id}` },
+                      { type: 'danger' });
               })
       };
 
+      //====================
+      // Login/Logout
+      //====================
 
       this.onLogin = () => {
           log.info("login clicked");
@@ -217,6 +178,31 @@
           window.googleAPIManager.signOut();
           this.isAuthorized = window.googleAPIManager.isSignedIn();
       };
+
+      //====================
+      // Utility
+      //====================
+
+      this.setEditingFile = (fileId, fileName, parentId, parentName) => {
+          this._editingFile = {
+              id: fileId,
+              name: fileName,
+              parentId: parentId,
+              parentName: parentName
+          };
+          riot.control.trigger(riot.VE.EDITOR_NAV.EDITING_FILE_CHANGED, this._editingFile);
+          this.update();
+      };
+
+      this.setContent = (content) => {
+          riot.control.trigger(riot.VE.EDITOR_NAV.CONTENT_CHANGED, content);
+      }
+
+      // 親タグからeditor-mainタグを取得してcontentを取得する
+      // TODO: ちょっとDirty
+      this.getContent = () => {
+          return this.parent.tags['editor-main'].getContent();
+      }
 
   </script>
 

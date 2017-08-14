@@ -13642,6 +13642,78 @@ function getLogger(name) {
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function () {
+
+    function _factory($) {
+        var selectorPool = {},
+            objPool      = [];
+
+        return function $$(selector, update) {
+            var $elem;
+
+            // if selector is string
+            if (typeof selector === 'string') {
+                if (update) {
+                    return selectorPool[selector] = $(selector);
+                }
+
+                $elem = selectorPool[selector];
+                if ($elem === undefined) {
+                    $elem = selectorPool[selector] = $(selector);
+                }
+                return $elem;
+            }
+
+            // if selector is DOM object or jQuery object
+
+            var obj = objPool.find(function (obj) {
+                return obj.elem === selector;
+            });
+
+            if (obj !== undefined) {
+                return obj.$elem;
+            }
+
+            $elem = $(selector);
+            objPool.push({
+                elem: selector,
+                $elem: $elem
+            });
+
+            return $elem;
+        };
+    }
+
+    /*------------------------------------*\
+     # UMD
+     \*------------------------------------*/
+    (function (root, factory) {
+        if (true) {
+            // AMD. Register as an anonymous module.
+            !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, __webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+        } else if (typeof module === 'object' && typeof module.nodeName !== 'string') {
+            // CommonJS
+            factory(module, require('jquery'));
+        } else {
+            // Browser globals
+            if (typeof root.jQuery !== 'function' || (root.$$ !== undefined)) {
+                return false;
+            }
+            root.$$ = _factory(root.jQuery);
+        }
+    }(this, function (module, jQuery) {
+        module.exports = _factory(jQuery);
+    }));
+
+})();
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports) {
 
 /*
@@ -13723,7 +13795,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -14082,78 +14154,6 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function () {
-
-    function _factory($) {
-        var selectorPool = {},
-            objPool      = [];
-
-        return function $$(selector, update) {
-            var $elem;
-
-            // if selector is string
-            if (typeof selector === 'string') {
-                if (update) {
-                    return selectorPool[selector] = $(selector);
-                }
-
-                $elem = selectorPool[selector];
-                if ($elem === undefined) {
-                    $elem = selectorPool[selector] = $(selector);
-                }
-                return $elem;
-            }
-
-            // if selector is DOM object or jQuery object
-
-            var obj = objPool.find(function (obj) {
-                return obj.elem === selector;
-            });
-
-            if (obj !== undefined) {
-                return obj.$elem;
-            }
-
-            $elem = $(selector);
-            objPool.push({
-                elem: selector,
-                $elem: $elem
-            });
-
-            return $elem;
-        };
-    }
-
-    /*------------------------------------*\
-     # UMD
-     \*------------------------------------*/
-    (function (root, factory) {
-        if (true) {
-            // AMD. Register as an anonymous module.
-            !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, __webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-        } else if (typeof module === 'object' && typeof module.nodeName !== 'string') {
-            // CommonJS
-            factory(module, require('jquery'));
-        } else {
-            // Browser globals
-            if (typeof root.jQuery !== 'function' || (root.$$ !== undefined)) {
-                return false;
-            }
-            root.$$ = _factory(root.jQuery);
-        }
-    }(this, function (module, jQuery) {
-        module.exports = _factory(jQuery);
-    }));
-
-})();
-
-/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14176,7 +14176,7 @@ __webpack_require__(10);
 
 __webpack_require__(11);
 
-var _stores = __webpack_require__(58);
+var _stores = __webpack_require__(59);
 
 var _stores2 = _interopRequireDefault(_stores);
 
@@ -14301,12 +14301,9 @@ _riot2.default.VE = {
         GOOGLE_API_LOADED: "ve-app-google_api-loaded"
     },
     EDITOR_NAV: {
-        FILE_NEW: "ve-editor_nav-file_new",
-        FILE_OPEN: "ve-editor_nav-file_open",
-        FILE_SAVE_AS: "ve-editor_nav-file_save_as",
-        FILE_SAVE: "ve-editor_nav-file_save"
-    },
-    TEXT_CHANGED: "ve_text_set"
+        EDITING_FILE_CHANGED: "ve.editor_nav.editing_file_changed",
+        CONTENT_CHANGED: "ve.editor_nav.content_changed"
+    }
 };
 
 // register global tag mixin for using RiotControl
@@ -14338,9 +14335,9 @@ __webpack_require__(54);
 
 __webpack_require__(55);
 
-__webpack_require__(62);
-
 __webpack_require__(56);
+
+__webpack_require__(57);
 
 /***/ }),
 /* 12 */
@@ -15142,7 +15139,7 @@ var GoogleDriveAPI = exports.GoogleDriveAPI = function () {
 
 __webpack_require__(1);
 
-__webpack_require__(6);
+__webpack_require__(4);
 
 __webpack_require__(19);
 
@@ -17617,7 +17614,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(5)(content, options);
+var update = __webpack_require__(6)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -17637,7 +17634,7 @@ if(false) {
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)(undefined);
+exports = module.exports = __webpack_require__(5)(undefined);
 // imports
 
 
@@ -18143,7 +18140,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(5)(content, options);
+var update = __webpack_require__(6)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -18163,7 +18160,7 @@ if(false) {
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)(undefined);
+exports = module.exports = __webpack_require__(5)(undefined);
 // imports
 
 
@@ -18478,7 +18475,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
     //src: src/tag/app-nav.tag
 riot.tag2('app-nav',
   '<a each="{links}" href="#{url}" class="{selected: selectedId === url}"> {name} </a>',
-  'app-nav,[data-is="app-nav"]{ position: fixed; top: 0; left: 0; height: 100%; box-sizing: border-box; font-family: sans-serif; text-align: center; color: #666; background: #333; width: 60px; transition: width .2s; } app-nav a,[data-is="app-nav"] a{ display: block; box-sizing: border-box; width: 100%; height: 50px; line-height: 50px; padding: 0 .8em; color: white; text-decoration: none; background: #444; } app-nav a:hover,[data-is="app-nav"] a:hover{ background: #666; } app-nav a.selected,[data-is="app-nav"] a.selected{ background: teal; }',
+  '@charset "UTF-8"; .picker-dialog-bg { z-index: 20000 !important; } app-nav .picker-dialog,[data-is="app-nav"] .picker-dialog{ z-index: 20001 !important; } app-nav,[data-is="app-nav"]{ position: fixed; top: 0; left: 0; height: 100%; box-sizing: border-box; font-family: sans-serif; text-align: center; color: #666; background: #333; width: 60px; transition: width .2s; } app-nav a,[data-is="app-nav"] a{ display: block; box-sizing: border-box; width: 100%; height: 50px; line-height: 50px; padding: 0 .8em; color: white; text-decoration: none; background: #444; } app-nav a:hover,[data-is="app-nav"] a:hover{ background: #666; } app-nav a.selected,[data-is="app-nav"] a.selected{ background: teal; }',
   '', function(opts) {
 "use strict";
 
@@ -18561,11 +18558,11 @@ this.on('mount', function () {
 /* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function($$, $) {
+/* WEBPACK VAR INJECTION */(function($) {
     var riot = __webpack_require__(0)
     //src: src/tag/editor-nav.tag
 riot.tag2('editor-nav',
-  '<nav class="navbar navbar-toggleable navbar-default navbar-fixed-top"> <div class="container-fluid"> <div class="navbar-header"> <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> </div> <div class="navbar-collapse collapse" id="navbar"> <ul class="nav navbar-nav"> <li class="dropdown"> <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">File <span class="caret"></span></a> <ul class="dropdown-menu"> <li><a onclick="{onFileNew}">New</a></li> <li><a onclick="{onFileOpen}">Open</a></li> <li><a onclick="{onFileSaveAs}">Save As...</a></li> <li if="{_editingFileId}"> <a onclick="{onFileSave}">Save</a> </li> </ul> </li> <li class="dropdown"> <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a> <ul class="dropdown-menu"> <li><a href="#">Copy</a></li> <li><a href="#">Paste</a></li> </ul> </li> </ul> <ul class="nav navbar-nav navbar-right"> <li><a onclick="{onLogin}" if="{!opts.isAuthorized}">Login</a></li> <li><a onclick="{onLogout}" if="{opts.isAuthorized}">Logout</a></li> </ul> </div> </div> </nav> <file-save-dialog dialog-id="file-new-dialog" title="New File" on-ok="{onFileNewOK}"></file-save-dialog> <file-save-dialog dialog-id="file-save-as-dialog" title="Save File As" on-ok="{onFileSaveAsOK}"></file-save-dialog>',
+  '<nav class="navbar navbar-toggleable navbar-default navbar-fixed-top"> <div class="container-fluid"> <div class="navbar-header"> <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> </div> <div class="navbar-collapse collapse" id="navbar"> <ul class="nav navbar-nav"> <li class="dropdown"> <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">File <span class="caret"></span></a> <ul class="dropdown-menu"> <li><a onclick="{onFileNew}">New</a></li> <li><a onclick="{onFileOpen}">Open</a></li> <li><a onclick="{onFileSaveAs}">Save As...</a></li> <li if="{_editingFile}"> <a onclick="{onFileSave}">Save</a> </li> </ul> </li> <li class="dropdown"> <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a> <ul class="dropdown-menu"> <li><a href="#">Copy</a></li> <li><a href="#">Paste</a></li> </ul> </li> </ul> <ul class="nav navbar-nav navbar-right"> <li><a onclick="{onLogin}" if="{!opts.isAuthorized}">Login</a></li> <li><a onclick="{onLogout}" if="{opts.isAuthorized}">Logout</a></li> </ul> </div> </div> </nav> <file-save-dialog ref="file-new-dialog" title="New File" on-ok="{onFileNewOK}"></file-save-dialog> <file-save-dialog ref="file-save-as-dialog" title="Save File As" on-ok="{onFileSaveAsOK}"></file-save-dialog>',
   '@charset "UTF-8"; .picker-dialog-bg { z-index: 20000 !important; } editor-nav .picker-dialog,[data-is="editor-nav"] .picker-dialog{ z-index: 20001 !important; } editor-nav,[data-is="editor-nav"]{ position: fixed; top: 0; left: 60px; right: 0; z-index: 9999; height: 50px; } editor-nav .navbar,[data-is="editor-nav"] .navbar{ position: absolute; top: 0px; } editor-nav a,[data-is="editor-nav"] a{ cursor: pointer; }',
   '', function(opts) {
 "use strict";
@@ -18590,53 +18587,30 @@ var log = (0, _logging2.default)(this.__.tagName);
 
 this.mixin("controlMixin");
 
-this._editingFileId = null;
+this._editingFile = null;
 
 this.on('mount', function () {
     log.info("is mounted.");
     log.printOpts(opts);
 });
 
-this.setEditingFileId = function (fileId) {
-    _this._editingFileId = fileId;
-    _this.update();
-};
-
 //====================
 // File -> New
 //====================
 
 this.onFileNew = function () {
-    log.info("new clicked");
-    $$('#file-new-dialog').modal('show');
+    _this.refs["file-new-dialog"].show();
 };
 
-this.onFileNewOK = function () {
-    var fileName = $$('#file-new-dialog-file-name').val();
-    var parentId = $$('#file-new-dialog-folder-id').val();
-
-    if (!fileName) {
-        $.notify({
-            message: "File name is empty.",
-            //                  element: "save-file-as",
-            type: "danger",
-            delay: 2000,
-            placement: { align: "center" }
-        });
-        return;
-    }
-
+this.onFileNewOK = function (fileName, parentId, parentName) {
     // ファイルを所定のフォルダに作成する
     window.googleAPIManager.createFile(fileName, 'application/json', [parentId]).then(function (resp) {
-        $.notify({
-            message: "File \"" + resp.result.name + "\" created.",
-            type: 'info'
-        });
-        _this.setEditingFileId(resp.result.id);
+        $.notify({ message: "File \"" + resp.result.name + "\" created." }, { type: 'info' });
+        _this.setEditingFile(resp.result.id, resp.result.name, parentId, parentName);
     });
 
     // ダイアログを閉じる
-    $$('#file-new-dialog').modal('hide');
+    _this.refs["file-new-dialog"].hide();
 };
 
 //====================
@@ -18644,22 +18618,17 @@ this.onFileNewOK = function () {
 //====================
 
 this.onFileOpen = function () {
-    log.info("open clicked");
     window.googleAPIManager.showFilePicker(function (pickerEvent) {
         if (pickerEvent.action === "picked") {
             var file = pickerEvent.docs[0];
             window.googleAPIManager.downloadFile(file.id).then(function (resp) {
-                $$('#file-content').val(resp.body);
-                $.notify({
-                    message: "File \"" + file.name + "\" loaded.",
-                    type: 'info'
-                });
-                _this.setEditingFileId(file.id);
+                _this.setContent(resp.body);
+                $.notify({ message: "File \"" + file.name + "\" loaded." }, { type: 'info' });
             }, function (resp) {
-                $.notify({
-                    message: "Failed to save file. fileId: " + resp.result.id,
-                    type: 'danger'
-                });
+                $.notify({ message: "Failed to open file. fileId: " + resp.result.id }, { type: 'danger' });
+            });
+            window.googleAPIManager.getFilePath(file.parentId).then(function (path) {
+                _this.setEditingFile(file.id, file.name, file.parentId, path);
             });
         }
     });
@@ -18670,46 +18639,23 @@ this.onFileOpen = function () {
 //====================
 
 this.onFileSaveAs = function () {
-    log.info("save as clicked");
-    $$('#file-save-as-dialog').modal('show');
+    _this.refs["file-save-as-dialog"].show();
 };
 
-this.onFileSaveAsOK = function () {
-    var fileName = $$('#file-save-as-dialog-file-name').val();
-    var parentId = $$('#file-save-as-dialog-folder-id').val();
-    var content = $$('#file-content').val();
-
-    if (!fileName) {
-        $.notify({
-            message: "File name is empty.",
-            // element: "save-file-as",
-            type: "danger",
-            delay: 2000,
-            placement: {
-                align: "center"
-            }
-        });
-        return;
-    }
+this.onFileSaveAsOK = function (fileName, parentId, parentName) {
+    var content = _this.getContent();
 
     // ファイルを所定のフォルダに作成し、さらに中身を書き込む
     window.googleAPIManager.createFile(fileName, 'application/json', [parentId]).then(function (resp) {
         window.googleAPIManager.updateFile(resp.result.id, content).then(function (resp) {
-            $.notify({
-                message: "File \"" + resp.result.name + "\" saved, content: " + content,
-                type: 'info'
-            });
-            _this.setEditingFileId(resp.result.id);
+            $.notify({ message: "File \"" + resp.result.name + "\" saved, content: " + content }, { type: 'info' });
+            _this.setEditingFile(resp.result.id, resp.result.name, parentId, parentName);
         }, function (resp) {
-            $.notify({
-                message: "Failed to save file. fileId: " + resp.result.id,
-                type: 'danger'
-            });
+            $.notify({ message: "Failed to save file. fileId: " + resp.result.id }, { type: 'danger' });
         });
     });
 
-    // ダイアログを閉じる
-    $$('#file-save-as-dialog').modal('hide');
+    _this.refs["file-save-as-dialog"].hide();
 };
 
 //====================
@@ -18717,20 +18663,18 @@ this.onFileSaveAsOK = function () {
 //====================
 
 this.onFileSave = function () {
-    var content = $$('#file-content').val();
+    var content = _this.getContent();
 
-    window.googleAPIManager.updateFile(_this._editingFileId, content).then(function (resp) {
-        $.notify({
-            message: "File \"" + resp.result.name + "\" saved, content: " + content,
-            type: 'info'
-        });
+    window.googleAPIManager.updateFile(_this._editingFile.id, content).then(function (resp) {
+        $.notify({ message: "File \"" + resp.result.name + "\" saved, content: " + content }, { type: 'info' });
     }, function (resp) {
-        $.notify({
-            message: "Failed to save file. fileId: " + resp.result.id,
-            type: 'danger'
-        });
+        $.notify({ message: "Failed to save file. fileId: " + resp.result.id }, { type: 'danger' });
     });
 };
+
+//====================
+// Login/Logout
+//====================
 
 this.onLogin = function () {
     log.info("login clicked");
@@ -18743,6 +18687,31 @@ this.onLogout = function () {
     window.googleAPIManager.signOut();
     _this.isAuthorized = window.googleAPIManager.isSignedIn();
 };
+
+//====================
+// Utility
+//====================
+
+this.setEditingFile = function (fileId, fileName, parentId, parentName) {
+    _this._editingFile = {
+        id: fileId,
+        name: fileName,
+        parentId: parentId,
+        parentName: parentName
+    };
+    _riot2.default.control.trigger(_riot2.default.VE.EDITOR_NAV.EDITING_FILE_CHANGED, _this._editingFile);
+    _this.update();
+};
+
+this.setContent = function (content) {
+    _riot2.default.control.trigger(_riot2.default.VE.EDITOR_NAV.CONTENT_CHANGED, content);
+};
+
+// 親タグからeditor-mainタグを取得してcontentを取得する
+// TODO: ちょっとDirty
+this.getContent = function () {
+    return _this.parent.tags['editor-main'].getContent();
+};
 });
 
     
@@ -18753,7 +18722,7 @@ this.onLogout = function () {
     }
   }
   
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 54 */
@@ -18763,10 +18732,12 @@ this.onLogout = function () {
     var riot = __webpack_require__(0)
     //src: src/tag/editor-main.tag
 riot.tag2('editor-main',
-  '<label for="file-content">Content:</label> <div class="form-group"> <textarea class="form-control" rows="5" id="file-content"></textarea> </div>',
-  'editor-main,[data-is="editor-main"]{ position: absolute; top: 50px; left: 60px; padding: 1em; font-family: sans-serif; text-align: center; color: #666; }',
+  '<div class="container"> <div class="form-group row"> <label class="col-sm-2 control-label">File:</label> <span ref="file-name"></span> </div> <div class="form-group row"> <label class="col-sm-2 control-label">Folder:</label> <span ref="folder-name"></span> </div> <div class="form-group row"> <label class="col-sm-2 control-label" for="editor-main-file-content">Content:</label> <textarea class="form-control" rows="10" id="editor-main-file-content" ref="file-content"></textarea> </div> </div>',
+  '@charset "UTF-8"; .picker-dialog-bg { z-index: 20000 !important; } editor-main .picker-dialog,[data-is="editor-main"] .picker-dialog{ z-index: 20001 !important; } editor-main,[data-is="editor-main"]{ position: absolute; top: 50px; left: 60px; right: 0; padding: 1em; font-family: sans-serif; color: #666; }',
   '', function(opts) {
 "use strict";
+
+var _this = this;
 
 var _riot = __webpack_require__(0);
 
@@ -18784,17 +18755,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var log = (0, _logging2.default)(this.__.tagName);
 
+this.mixin("controlMixin");
+
 this.on('mount', function () {
     log.info("is mounted.");
 });
 
-_riot2.default.control.on(_riot2.default.VE.EDITOR_NAV.FILE_NEW, function () {
-    log.info("file new called");
+this.onControl(_riot2.default.VE.EDITOR_NAV.EDITING_FILE_CHANGED, function (editingFile) {
+    _this.refs["file-name"].innerText = editingFile.name;
+    _this.refs["folder-name"].innerText = editingFile.parentName;
 });
 
-_riot2.default.control.on(_riot2.default.VE.EDITOR_NAV.FILE_OPEN, function () {
-    log.info("file open called");
+this.onControl(_riot2.default.VE.EDITOR_NAV.CONTENT_CHANGED, function (content) {
+    _this.refs["file-content"].value = content;
 });
+
+this.getContent = function () {
+    return _this.refs["file-content"].value;
+};
 });
 
     
@@ -18855,10 +18833,86 @@ this.on('mount', function () {
 /* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
+/* WEBPACK VAR INJECTION */(function($$, $) {
+    var riot = __webpack_require__(0)
+    //src: src/tag/components/file-save-dialog.tag
+riot.tag2('file-save-dialog',
+  '<div id="{opts.ref}" class="modal fade"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> <h4 class="modal-title">{opts.title}</h4> </div> <div class="modal-body"> <div class="container-fluid"> <div class="form-group row"> <label class="col-sm-2 control-label" for="{opts.ref + \'-file-name\'}">Save As:</label> <div class="col-sm-10"> <input type="text" class="form-control" id="{opts.ref + \'-file-name\'}"> </div> <label class="col-sm-2 control-label" for="{opts.ref + \'-select-folder\'}">Where:</label> <div class="col-sm-8"> <input type="text" id="{opts.ref + \'-select-folder\'}" class="form-control" readonly="readonly" required="true" onclick="{onSelectFolder}" riot-value="{initialFolderPath}"> <input type="hidden" id="{opts.ref + \'-folder-id\'}"> </div> <button id="reset-folder" type="button" class="btn btn-primary" onclick="{onResetFolder}"><i class="fa fa-home" aria-hidden="true"></i></button> </div> </div> </div> <div class="modal-footer"> <button type="button" id="{opts.ref + \'-ok\'}" class="btn btn-primary" onclick="{onOK}">OK</button> <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> </div> </div> </div> </div>',
+  '',
+  '', function(opts) {
+'use strict';
+
+this.initialFolderPath = "My Drive";
+
+//====================
+// Public methods
+//====================
+
+this.show = function () {
+    // 本当はrefsを用いて参照したいが、bootstrapのmodalメソッドはjqueryでのセレクタにしか対応していない
+    $$('#' + opts.ref).modal('show');
+};
+
+this.hide = function () {
+    $$('#' + opts.ref).modal('hide');
+};
+
+//====================
+// Private methods
+//====================
+
+this.onSelectFolder = function () {
+    window.googleAPIManager.showFolderPicker(function (pickerEvent) {
+        if (pickerEvent.action === "picked") {
+            var folderId = pickerEvent.docs[0].id;
+            $$('#' + opts.ref + '-folder-id').val(folderId);
+            // 擬似的なファイルパスを取得する
+            window.googleAPIManager.getFilePath(folderId).then(function (path) {
+                console.log('File path: ' + path);
+                $$('#' + opts.ref + '-select-folder').val(path);
+            });
+        }
+    });
+};
+
+this.onResetFolder = function () {
+    $$('#' + opts.ref + '-select-folder').val('My Drive');
+    $$('#' + opts.ref + '-folder-id').val('root');
+};
+
+this.onOK = function () {
+    var fileName = $$('#' + opts.ref + '-file-name').val();
+    var parentId = $$('#' + opts.ref + '-folder-id').val();
+    var parentName = $$('#' + opts.ref + '-select-folder').val();
+
+    if (!fileName) {
+        // TODO: フォームのバリデーション方法を考える
+        $.notify({ message: "File name is empty." }, { type: "danger", delay: 2000, placement: { align: "center" } });
+        return true;
+    }
+
+    // コールバック呼び出し
+    opts.onOk(fileName, parentId, parentName);
+};
+});
+    
+  if (false) {
+    module.hot.accept()
+    if (module.hot.data) {
+      riot.reload('file-save-dialog')
+    }
+  }
+  
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(1)))
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(57);
+var content = __webpack_require__(58);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -18866,7 +18920,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(5)(content, options);
+var update = __webpack_require__(6)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -18883,10 +18937,10 @@ if(false) {
 }
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)(undefined);
+exports = module.exports = __webpack_require__(5)(undefined);
 // imports
 
 
@@ -18897,7 +18951,7 @@ exports.push([module.i, "@charset \"UTF-8\";\n/* Google PickerがModalダイア�
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18907,14 +18961,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _EditorStore = __webpack_require__(59);
+var _EditorStore = __webpack_require__(60);
 
 var stores = new _EditorStore.EditorStore();
 
 exports.default = stores;
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18931,7 +18985,7 @@ var _riot = __webpack_require__(0);
 
 var _riot2 = _interopRequireDefault(_riot);
 
-var _StoreBase2 = __webpack_require__(60);
+var _StoreBase2 = __webpack_require__(61);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -18974,7 +19028,7 @@ var EditorStore = exports.EditorStore = function (_StoreBase) {
 }(_StoreBase2.StoreBase);
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19049,51 +19103,6 @@ var StoreBase = exports.StoreBase = function () {
 
     return StoreBase;
 }();
-
-/***/ }),
-/* 61 */,
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function($$) {
-    var riot = __webpack_require__(0)
-    //src: src/tag/components/file-save-dialog.tag
-riot.tag2('file-save-dialog',
-  '<div id="{opts.dialogId}" class="modal fade"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> <h4 class="modal-title">{opts.title}</h4> </div> <div class="modal-body"> <div class="container-fluid"> <div class="form-group row"> <label class="col-sm-2 control-label" for="{opts.dialogId + \'-file-name\'}">Save As:</label> <div class="col-sm-10"> <input type="text" class="form-control" id="{opts.dialogId + \'-file-name\'}"> </div> <label class="col-sm-2 control-label" for="{opts.dialogId + \'-select-folder\'}">Where:</label> <div class="col-sm-8"> <input type="text" id="{opts.dialogId + \'-select-folder\'}" class="form-control" readonly="readonly" onclick="{onSelectFolder}" riot-value="{initialFolderPath}"> <input type="hidden" id="{opts.dialogId + \'-folder-id\'}"> </div> <button id="reset-folder" type="button" class="btn btn-primary" onclick="{onResetFolder}"><i class="fa fa-home" aria-hidden="true"></i></button> </div> </div> </div> <div class="modal-footer"> <button type="button" id="{opts.dialogId + \'-ok\'}" class="btn btn-primary" onclick="{opts.onOk}">OK</button> <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> </div> </div> </div> </div>',
-  '',
-  '', function(opts) {
-"use strict";
-
-this.initialFolderPath = "My Drive";
-
-this.onSelectFolder = function () {
-    window.googleAPIManager.showFolderPicker(function (pickerEvent) {
-        if (pickerEvent.action === "picked") {
-            var folderId = pickerEvent.docs[0].id;
-            $$("#" + opts.dialogId + "-folder-id").val(folderId);
-            // 擬似的なファイルパスを取得する
-            window.googleAPIManager.getFilePath(folderId).then(function (path) {
-                console.log("File path: " + path);
-                $$("#" + opts.dialogId + "-select-folder").val(path);
-            });
-        }
-    });
-};
-
-this.onResetFolder = function () {
-    $$("#" + opts.dialogId + "-select-folder").val('My Drive');
-    $$("#" + opts.dialogId + "-folder-id").val('root');
-};
-});
-    
-  if (false) {
-    module.hot.accept()
-    if (module.hot.data) {
-      riot.reload('file-save-dialog')
-    }
-  }
-  
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ })
 /******/ ]);

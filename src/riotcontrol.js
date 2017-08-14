@@ -33,12 +33,9 @@ riot.VE = {
         GOOGLE_API_LOADED: "ve-app-google_api-loaded"
     },
     EDITOR_NAV: {
-        FILE_NEW: "ve-editor_nav-file_new",
-        FILE_OPEN: "ve-editor_nav-file_open",
-        FILE_SAVE_AS: "ve-editor_nav-file_save_as",
-        FILE_SAVE: "ve-editor_nav-file_save"
+        EDITING_FILE_CHANGED: "ve.editor_nav.editing_file_changed",
+        CONTENT_CHANGED: "ve.editor_nav.content_changed"
     },
-    TEXT_CHANGED: "ve_text_set",
 };
 
 
