@@ -1,5 +1,6 @@
 <view-config>
 
+  <config-main/>
 
   <script>
       import riot from "riot";

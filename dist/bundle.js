@@ -13642,78 +13642,6 @@ function getLogger(name) {
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function () {
-
-    function _factory($) {
-        var selectorPool = {},
-            objPool      = [];
-
-        return function $$(selector, update) {
-            var $elem;
-
-            // if selector is string
-            if (typeof selector === 'string') {
-                if (update) {
-                    return selectorPool[selector] = $(selector);
-                }
-
-                $elem = selectorPool[selector];
-                if ($elem === undefined) {
-                    $elem = selectorPool[selector] = $(selector);
-                }
-                return $elem;
-            }
-
-            // if selector is DOM object or jQuery object
-
-            var obj = objPool.find(function (obj) {
-                return obj.elem === selector;
-            });
-
-            if (obj !== undefined) {
-                return obj.$elem;
-            }
-
-            $elem = $(selector);
-            objPool.push({
-                elem: selector,
-                $elem: $elem
-            });
-
-            return $elem;
-        };
-    }
-
-    /*------------------------------------*\
-     # UMD
-     \*------------------------------------*/
-    (function (root, factory) {
-        if (true) {
-            // AMD. Register as an anonymous module.
-            !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, __webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-        } else if (typeof module === 'object' && typeof module.nodeName !== 'string') {
-            // CommonJS
-            factory(module, require('jquery'));
-        } else {
-            // Browser globals
-            if (typeof root.jQuery !== 'function' || (root.$$ !== undefined)) {
-                return false;
-            }
-            root.$$ = _factory(root.jQuery);
-        }
-    }(this, function (module, jQuery) {
-        module.exports = _factory(jQuery);
-    }));
-
-})();
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports) {
 
 /*
@@ -13795,7 +13723,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -14154,6 +14082,78 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function () {
+
+    function _factory($) {
+        var selectorPool = {},
+            objPool      = [];
+
+        return function $$(selector, update) {
+            var $elem;
+
+            // if selector is string
+            if (typeof selector === 'string') {
+                if (update) {
+                    return selectorPool[selector] = $(selector);
+                }
+
+                $elem = selectorPool[selector];
+                if ($elem === undefined) {
+                    $elem = selectorPool[selector] = $(selector);
+                }
+                return $elem;
+            }
+
+            // if selector is DOM object or jQuery object
+
+            var obj = objPool.find(function (obj) {
+                return obj.elem === selector;
+            });
+
+            if (obj !== undefined) {
+                return obj.$elem;
+            }
+
+            $elem = $(selector);
+            objPool.push({
+                elem: selector,
+                $elem: $elem
+            });
+
+            return $elem;
+        };
+    }
+
+    /*------------------------------------*\
+     # UMD
+     \*------------------------------------*/
+    (function (root, factory) {
+        if (true) {
+            // AMD. Register as an anonymous module.
+            !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, __webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+        } else if (typeof module === 'object' && typeof module.nodeName !== 'string') {
+            // CommonJS
+            factory(module, require('jquery'));
+        } else {
+            // Browser globals
+            if (typeof root.jQuery !== 'function' || (root.$$ !== undefined)) {
+                return false;
+            }
+            root.$$ = _factory(root.jQuery);
+        }
+    }(this, function (module, jQuery) {
+        module.exports = _factory(jQuery);
+    }));
+
+})();
+
+/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14185,10 +14185,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _riot2.default.control.addStore(_stores2.default);
 
 _riot2.default.mount("app");
-
-// window.handleClientLoad = () => {
-//     riot.control.trigger(riot.VE.APP.GOOGLE_API_LOADED);
-// };
 
 /***/ }),
 /* 9 */
@@ -14335,6 +14331,8 @@ __webpack_require__(54);
 
 __webpack_require__(55);
 
+__webpack_require__(62);
+
 __webpack_require__(56);
 
 __webpack_require__(57);
@@ -14347,7 +14345,7 @@ __webpack_require__(57);
     var riot = __webpack_require__(0)
     //src: src/tag/app.tag
 riot.tag2('app',
-  '<app-nav></app-nav> <div ref="view"></div>',
+  '<app-nav></app-nav> <div data-is="{view}" is-authorized="{isAuthorized}"></div>',
   '',
   '', function(opts) {
 "use strict";
@@ -14379,22 +14377,16 @@ var log = (0, _logging2.default)(this.__.tagName);
 //==========================
 this.isAuthorized = false;
 
-this.loadView = function (viewName, isAuthorized) {
-    if (_this.refs.view._tag) {
-        _this.refs.view._tag.unmount(true); //true to keep the element
-    }
-    _riot2.default.mount(_this.refs.view, viewName, { isAuthorized: isAuthorized })[0];
-};
-
 (0, _tag2.default)(function (view) {
     switch (view) {
         case "editor":
-            _this.loadView("view-editor", _this.isAuthorized);
+            _this.view = "view-editor";
             break;
         case "config":
-            _this.loadView("view-config");
+            _this.view = "view-config";
             break;
     }
+    _this.update();
 });
 
 this.on('mount', function () {
@@ -14422,7 +14414,7 @@ window.onGoogleAPIClientLoad = function () {
 };
 
 //====================
-// Notification
+// Notification setting
 //====================
 
 $.notifyDefaults({
@@ -15139,7 +15131,7 @@ var GoogleDriveAPI = exports.GoogleDriveAPI = function () {
 
 __webpack_require__(1);
 
-__webpack_require__(4);
+__webpack_require__(6);
 
 __webpack_require__(19);
 
@@ -17614,7 +17606,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(6)(content, options);
+var update = __webpack_require__(5)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -17634,7 +17626,7 @@ if(false) {
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(5)(undefined);
+exports = module.exports = __webpack_require__(4)(undefined);
 // imports
 
 
@@ -18140,7 +18132,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(6)(content, options);
+var update = __webpack_require__(5)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -18160,7 +18152,7 @@ if(false) {
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(5)(undefined);
+exports = module.exports = __webpack_require__(4)(undefined);
 // imports
 
 
@@ -18792,7 +18784,7 @@ this.getContent = function () {
     var riot = __webpack_require__(0)
     //src: src/tag/view-config.tag
 riot.tag2('view-config',
-  '',
+  '<config-main></config-main>',
   '',
   '', function(opts) {
 "use strict";
@@ -18837,8 +18829,8 @@ this.on('mount', function () {
     var riot = __webpack_require__(0)
     //src: src/tag/components/file-save-dialog.tag
 riot.tag2('file-save-dialog',
-  '<div id="{opts.ref}" class="modal fade"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> <h4 class="modal-title">{opts.title}</h4> </div> <div class="modal-body"> <div class="container-fluid"> <div class="form-group row"> <label class="col-sm-2 control-label" for="{opts.ref + \'-file-name\'}">Save As:</label> <div class="col-sm-10"> <input type="text" class="form-control" id="{opts.ref + \'-file-name\'}"> </div> <label class="col-sm-2 control-label" for="{opts.ref + \'-select-folder\'}">Where:</label> <div class="col-sm-8"> <input type="text" id="{opts.ref + \'-select-folder\'}" class="form-control" readonly="readonly" required="true" onclick="{onSelectFolder}" riot-value="{initialFolderPath}"> <input type="hidden" id="{opts.ref + \'-folder-id\'}"> </div> <button id="reset-folder" type="button" class="btn btn-primary" onclick="{onResetFolder}"><i class="fa fa-home" aria-hidden="true"></i></button> </div> </div> </div> <div class="modal-footer"> <button type="button" id="{opts.ref + \'-ok\'}" class="btn btn-primary" onclick="{onOK}">OK</button> <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> </div> </div> </div> </div>',
-  '',
+  '<div id="{opts.ref}" class="modal fade"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> <h4 class="modal-title">{opts.title}</h4> </div> <div class="modal-body"> <div class="container-fluid"> <div class="form-group row"> <label class="col-sm-2 control-label" for="{opts.ref + \'-file-name\'}">Save As:</label> <div class="col-sm-10"> <input type="text" class="form-control" id="{opts.ref + \'-file-name\'}"> </div> <label class="col-sm-2 control-label" for="{opts.ref + \'-select-folder\'}">Where:</label> <div class="col-sm-8"> <input type="text" id="{opts.ref + \'-select-folder\'}" class="form-control" readonly="readonly" onclick="{onSelectFolder}" riot-value="{initialFolderPath}"> <input type="hidden" id="{opts.ref + \'-folder-id\'}"> </div> <button id="reset-folder" type="button" class="btn btn-primary" onclick="{onResetFolder}"><i class="fa fa-home" aria-hidden="true"></i></button> </div> </div> </div> <div class="modal-footer"> <button type="button" id="{opts.ref + \'-ok\'}" class="btn btn-primary" onclick="{onOK}">OK</button> <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> </div> </div> </div> </div>',
+  'file-save-dialog input[id$=\'-select-folder\'],[data-is="file-save-dialog"] input[id$=\'-select-folder\']{ cursor: pointer; }',
   '', function(opts) {
 'use strict';
 
@@ -18903,7 +18895,7 @@ this.onOK = function () {
     }
   }
   
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(1)))
 
 /***/ }),
 /* 57 */
@@ -18920,7 +18912,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(6)(content, options);
+var update = __webpack_require__(5)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -18940,7 +18932,7 @@ if(false) {
 /* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(5)(undefined);
+exports = module.exports = __webpack_require__(4)(undefined);
 // imports
 
 
@@ -19103,6 +19095,28 @@ var StoreBase = exports.StoreBase = function () {
 
     return StoreBase;
 }();
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+    var riot = __webpack_require__(0)
+    //src: src/tag/config-main.tag
+riot.tag2('config-main',
+  '<p>Under construction</p>',
+  '',
+  '', function(opts) {
+});
+
+    
+  if (false) {
+    module.hot.accept()
+    if (module.hot.data) {
+      riot.reload('config-main')
+    }
+  }
+  
 
 /***/ })
 /******/ ]);

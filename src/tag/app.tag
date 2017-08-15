@@ -1,15 +1,17 @@
 <app>
 
   <app-nav></app-nav>
+  <!-- Tag based routing -->
   <!--<router>-->
     <!--<route path="editor">-->
-      <!--<view-editor is-authorized={ true }/>-->
+      <!--<view-editor is-authorized={ parent.parent.isAuthorized }/>-->
     <!--</route>-->
     <!--<route path="config">-->
       <!--<view-config/>-->
     <!--</route>-->
   <!--</router>-->
-  <div ref="view"></div>
+
+  <div data-is={ view } is-authorized="{ isAuthorized }"></div>
 
 
   <script type="es6">
@@ -25,22 +27,16 @@
       //==========================
       this.isAuthorized = false;
 
-      this.loadView = (viewName, isAuthorized) => {
-          if (this.refs.view._tag) {
-              this.refs.view._tag.unmount(true) //true to keep the element
-          }
-          riot.mount(this.refs.view, viewName, {isAuthorized: isAuthorized})[0];
-      };
-
       route((view) => {
           switch (view) {
               case "editor":
-                  this.loadView("view-editor", this.isAuthorized);
+                  this.view = "view-editor";
                   break;
               case "config":
-                  this.loadView("view-config");
+                  this.view = "view-config";
                   break;
           }
+          this.update();
       });
 
       this.on('mount', () => {
@@ -69,7 +65,7 @@
 
 
       //====================
-      // Notification
+      // Notification setting
       //====================
 
       $.notifyDefaults({

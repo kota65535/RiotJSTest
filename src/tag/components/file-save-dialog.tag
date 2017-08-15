@@ -1,5 +1,11 @@
 <file-save-dialog>
 
+  <style>
+    input[id$='-select-folder'] {
+      cursor: pointer;
+    }
+  </style>
+
   <div id="{ opts.ref }" class="modal fade">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -16,7 +22,7 @@
               </div>
               <label class="col-sm-2 control-label" for="{ opts.ref + '-select-folder' }">Where:</label>
               <div class="col-sm-8">
-                <input type="text" id="{ opts.ref + '-select-folder' }" class="form-control" readonly="readonly" required="true"
+                <input type="text" id="{ opts.ref + '-select-folder' }" class="form-control" readonly="readonly"
                        onclick="{ onSelectFolder }" value="{ initialFolderPath }"/>
                 <input type="hidden" id="{ opts.ref + '-folder-id' }">
               </div>

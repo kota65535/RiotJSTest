@@ -9,7 +9,3 @@ riot.control.addStore(stores);
 
 riot.mount("app");
 
-
-// window.handleClientLoad = () => {
-//     riot.control.trigger(riot.VE.APP.GOOGLE_API_LOADED);
-// };
