@@ -12,9 +12,10 @@
   <!--</router>-->
 
   <div data-is={ view } is-authorized="{ isAuthorized }"></div>
+  <!--<view-editor is-authorized={ isAuthorized }/>-->
 
 
-  <script type="es6">
+  <script>
       import riot from "riot";
       import route from "riot-route/lib/tag";
       import {GoogleAPIManager} from "../lib/google/GoogleAPIManager";

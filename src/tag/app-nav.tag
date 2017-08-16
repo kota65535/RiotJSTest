@@ -5,7 +5,7 @@
   </a>
 
 
-  <script type="es6">
+  <script>
       import riot from "riot";
       import route from "riot-route";
 

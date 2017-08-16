@@ -1,11 +1,8 @@
 var webpack = require("webpack");
-var path = require("path");
 module.exports = {
     context: __dirname + '/src',
 
-    entry: {
-        js: "./index.js"
-    },
+    entry: "./index.js",
 
     output: {
         path: __dirname + '/dist',
@@ -14,7 +11,7 @@ module.exports = {
     },
 
     module: {
-        rules: [
+        loaders: [
             {
                 test: /\.tag$/,
                 exclude: /node_modules/,
@@ -28,14 +25,8 @@ module.exports = {
                 },
             },
             {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['es2015', 'stage-0']
-                    }
-                },
+                test: /\.tsx?$/,
+                loader: "ts-loader"
             },
             {
                 test: /\.css$/,
@@ -97,17 +88,13 @@ module.exports = {
             Popper: ['popper.js', 'default'],
             "Tether": 'tether',
             $$: 'jquery-selector-cache',
-            _: 'lodash',
+            _: 'lodash'
         })
     ],
 
     resolve: {
-        extensions: ['.js', '.jsx'],
+        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
     },
-
-    // devServer: {
-    //     publicPath: "/dist/"
-    // },
 
 
     devtool: "source-map"

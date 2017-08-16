@@ -1,53 +1,45 @@
-
-
-export class GoogleAuthAPI {
-
-    constructor(apiKey, clientId, scope, discoverDocs, onLoaded, onSignInStatusChanged) {
+"use strict";
+exports.__esModule = true;
+var GoogleAuthAPI = (function () {
+    function GoogleAuthAPI(apiKey, clientId, scope, discoverDocs, onLoaded, onSignInStatusChanged) {
+        var _this = this;
         this.apiKey = apiKey;
         this.clientId = clientId;
         this.scope = scope;
         this.discoverDocs = discoverDocs;
-
-        gapi.load('client:auth2', () => {
+        gapi.load('client:auth2', function () {
             gapi.client.init({
-                'apiKey': this.apiKey,
-                'clientId': this.clientId,
-                'scope': this.scope,
-                'discoveryDocs': this.discoverDocs
-            }).then( () => {
-                this.authInstance = gapi.auth2.getAuthInstance();
-
+                'apiKey': _this.apiKey,
+                'clientId': _this.clientId,
+                'scope': _this.scope,
+                'discoveryDocs': _this.discoverDocs
+            }).then(function () {
+                _this.authInstance = gapi.auth2.getAuthInstance();
                 // Listen for sign-in state changes.
-                this.authInstance.isSignedIn.listen(onSignInStatusChanged);
-
-                onLoaded(this.isSignedIn());
+                _this.authInstance.isSignedIn.listen(onSignInStatusChanged);
+                onLoaded(_this.isSignedIn());
             });
         });
     }
-
-    getCurrentUser() {
+    GoogleAuthAPI.prototype.getCurrentUser = function () {
         return this.authInstance.currentUser.get();
-    }
-
-    isSignedIn() {
+    };
+    GoogleAuthAPI.prototype.isSignedIn = function () {
         return this.authInstance.isSignedIn.get();
-    }
-
-    signIn() {
+    };
+    GoogleAuthAPI.prototype.signIn = function () {
         this.authInstance.signIn();
-    }
-
-    signOut() {
-        if (! this.authInstance.isSignedIn.get()) {
+    };
+    GoogleAuthAPI.prototype.signOut = function () {
+        if (!this.authInstance.isSignedIn.get()) {
             console.warn("Not signed in.");
             return;
         }
         this.authInstance.signOut();
-    }
-
-    revoke() {
+    };
+    GoogleAuthAPI.prototype.revoke = function () {
         this.authInstance.disconnect();
-    }
-
-}
-
+    };
+    return GoogleAuthAPI;
+}());
+exports.GoogleAuthAPI = GoogleAuthAPI;

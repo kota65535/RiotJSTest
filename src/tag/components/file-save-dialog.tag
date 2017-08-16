@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <script type="es6">
+  <script >
 
       this.initialFolderPath = "My Drive";
 

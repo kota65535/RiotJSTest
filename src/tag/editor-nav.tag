@@ -48,7 +48,7 @@
   <file-save-dialog ref="file-save-as-dialog" title="Save File As" on-ok="{ onFileSaveAsOK }"/>
 
 
-  <script type="es6">
+  <script>
       import riot from "riot";
       import route from "riot-route";
       import logger from "../logging";
