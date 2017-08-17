@@ -1,6 +1,5 @@
-
-
 import FileResource = gapi.client.drive.FileResource;
+
 export class GoogleDriveAPI {
 
     apiKey: string;
@@ -179,7 +178,7 @@ export class GoogleDriveAPI {
      * @returns {Promise}
      */
     createFile(fileName: string, mimeType: string, parents: string) {
-        let metadata = <FileResource>{
+        let metadata = <any>{
             mimeType: mimeType,
             name: fileName,
             fields: 'id'

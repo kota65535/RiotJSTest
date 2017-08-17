@@ -1,4 +1,5 @@
 var webpack = require("webpack");
+var path = require("path");
 module.exports = {
     context: __dirname + '/src',
 
@@ -11,7 +12,7 @@ module.exports = {
     },
 
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.tag$/,
                 exclude: /node_modules/,
@@ -19,14 +20,24 @@ module.exports = {
                     loader: 'riot-tag-loader',
                     options: {
                         type: 'es6', // transpile the riot tags using babel
-                        hot: true,
-                        debug: true
+                    }
+                },
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['es2015', 'stage-0']
                     }
                 },
             },
             {
                 test: /\.tsx?$/,
-                loader: "ts-loader"
+                use: {
+                    loader: "ts-loader"
+                }
             },
             {
                 test: /\.css$/,
@@ -44,7 +55,9 @@ module.exports = {
             },
             {
                 test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-                loader: 'file-loader'
+                use: {
+                    loader: 'file-loader'
+                }
             },
             {
                 test: /\.(woff|woff2)$/,
@@ -88,7 +101,8 @@ module.exports = {
             Popper: ['popper.js', 'default'],
             "Tether": 'tether',
             $$: 'jquery-selector-cache',
-            _: 'lodash'
+            _: 'lodash',
+            paper: 'paper'
         })
     ],
 
